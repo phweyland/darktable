@@ -357,6 +357,7 @@ void gui_init(dt_lib_module_t *self)
 
   self->widget = gtk_box_new(GTK_ORIENTATION_VERTICAL, DT_PIXEL_APPLY_DPI(5));
   gtk_widget_set_name(self->widget, "duplicate-ui");
+  dt_gui_add_help_link(self->widget, dt_get_help_url(self->plugin_name));
 
   GtkWidget *sw = gtk_scrolled_window_new(NULL, NULL);
   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(sw), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
@@ -366,8 +367,8 @@ void gui_init(dt_lib_module_t *self)
   GtkWidget *hb = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
   GtkWidget *bt = gtk_label_new(_("existing duplicates"));
   gtk_box_pack_start(GTK_BOX(hb), bt, FALSE, FALSE, 0);
-  bt = dtgtk_button_new(dtgtk_cairo_paint_plusminus, CPF_ACTIVE | CPF_STYLE_FLAT | CPF_DO_NOT_USE_BORDER, NULL);
-  g_object_set(G_OBJECT(bt), "tooltip-text", _("create a 'virgin' duplicate of the image without any developpement"), (char *)NULL);
+  bt = dtgtk_button_new(dtgtk_cairo_paint_plus, CPF_STYLE_FLAT | CPF_DO_NOT_USE_BORDER, NULL);
+  g_object_set(G_OBJECT(bt), "tooltip-text", _("create a 'virgin' duplicate of the image without any development"), (char *)NULL);
   g_signal_connect(G_OBJECT(bt), "button-press-event", G_CALLBACK(_lib_duplicate_new_clicked_callback), self);
   gtk_box_pack_end(GTK_BOX(hb), bt, FALSE, FALSE, 0);
   bt = dtgtk_button_new(dtgtk_cairo_paint_multiinstance, CPF_STYLE_FLAT | CPF_DO_NOT_USE_BORDER, NULL);
