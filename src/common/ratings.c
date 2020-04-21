@@ -34,6 +34,23 @@ typedef struct dt_undo_ratings_t
   int after;
 } dt_undo_ratings_t;
 
+static void *_get_undo_rating_image(const dt_undo_data_t data, const int imgid)
+{
+  GList *list = (GList *)data;
+  void *res = NULL;
+  while(list)
+  {
+    dt_undo_ratings_t *ratings = (dt_undo_ratings_t *)list->data;
+    if(imgid == ratings->imgid && ratings->after == DT_VIEW_REJECT)
+    {
+      res = (void *)ratings;
+      break;
+    }
+    list = g_list_next(list);
+  }
+  return res;
+}
+
 int dt_ratings_get(const int imgid)
 {
   int stars = 0;
@@ -149,8 +166,22 @@ void dt_ratings_apply_on_image(const int imgid, const int rating, const gboolean
     else if((previous_rating == DT_VIEW_REJECT) && (new_rating == DT_VIEW_REJECT))
     {
       new_rating = DT_VIEW_DESERT;
+      if(imgid > 0)
+      {
+        dt_undo_ratings_t *undo_ratings =
+            (dt_undo_ratings_t *)dt_undo_get_undo_data(darktable.undo,
+                                                       DT_UNDO_RATINGS,
+                                                       _get_undo_rating_image,
+                                                       imgid);
+        if(undo_ratings)
+        {
+          new_rating = undo_ratings->before;
+          printf("got ratings %d\n", undo_ratings->imgid);
+        }
+        else
+          printf("not ratings\n");
+      }
     }
-
     GList *undo = NULL;
     if(undo_on) dt_undo_start_group(darktable.undo, DT_UNDO_RATINGS);
     if(group_on) dt_grouping_add_grouped_images(&imgs);
@@ -165,7 +196,7 @@ void dt_ratings_apply_on_image(const int imgid, const int rating, const gboolean
                        new_rating, count);
     }
 
-    _ratings_apply(imgs, rating, &undo, undo_on);
+    _ratings_apply(imgs, new_rating, &undo, undo_on);
 
     if(undo_on)
     {

@@ -77,6 +77,11 @@ void dt_undo_do_undo(dt_undo_t *self, uint32_t filter);
 //  redo a previously undone action, does nothing if the redo list is empty
 void dt_undo_do_redo(dt_undo_t *self, uint32_t filter);
 
+// retrieve undo data for a given image
+void *dt_undo_get_undo_data(dt_undo_t *self, uint32_t filter,
+                            void *(*check)(const dt_undo_data_t data, const int imgid),
+                          const int imgid);
+
 //  removes all items which correspond to filter in the undo/redo lists
 void dt_undo_clear(dt_undo_t *self, uint32_t filter);
 
